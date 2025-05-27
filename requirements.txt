@@ -1,0 +1,69 @@
+# ========================
+# Base de Ciência de Dados
+# ========================
+pandas
+matplotlib
+scikit-learn
+seaborn
+jupyterlab
+notebook
+
+# =====================
+# PySpark e Big Data
+# =====================
+pyspark
+hdfs
+pyarrow
+
+# ==========================
+# Bancos de Dados
+# ==========================
+psycopg[binary]
+sqlalchemy
+pymongo
+
+# ==============================
+# Orquestração e ML Ops
+# ==============================
+dagster
+mlflow
+prefect
+kedro
+
+# =======================
+# Dev e Linting
+# =======================
+black
+ruff
+isort
+pre-commit
+mypy
+types-requests
+types-PyYAML
+
+# ============
+# Testes
+# ============
+pytest
+pytest-cov
+pytest-mock
+
+# =====================
+# Segurança e análise
+# =====================
+bandit
+safety
+
+# ===================
+# AWS / Cloud
+# ===================
+#boto3
+#s3fs
+#awscli
+localstack
+
+# ================
+# Databricks / Env
+# ================
+#databricks-cli
+python-dotenv
