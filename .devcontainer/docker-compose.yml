@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dev_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: flights
+    ports:
+      - "5432:5432"
+
+  mongo:
+    image: mongo:6
+    container_name: dev_mongo
+    ports:
+      - "27017:27017"
+
+  hadoop-namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-namenode
+    environment:
+      - CLUSTER_NAME=devcluster
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    ports:
+      - "9870:9870"
+    networks:
+      - bigdata
+
+  hadoop-datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: hadoop-datanode
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://hadoop-namenode:8020
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    ports:
+      - "9864:9864"
+    networks:
+      - bigdata
+    depends_on:
+      - hadoop-namenode
+
+  spark:
+    image: bitnami/spark:3.5
+    container_name: spark
+    ports:
+      - "4040:4040"
+    environment:
+      - SPARK_MODE=master
+    networks:
+      - bigdata
+
+  hive-metastore:
+    image: bde2020/hive:2.3.2-postgresql-metastore
+    container_name: hive-metastore
+    ports:
+      - "9083:9083"
+    environment:
+      - HIVE_METASTORE_DB_TYPE=postgres
+    networks:
+      - bigdata
+    depends_on:
+      - postgres
+
+  airflow:
+    image: apache/airflow:2.8.1-python3.11
+    container_name: airflow
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://dev:dev@postgres:5432/flights
+    depends_on:
+      - postgres
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+    networks:
+      - bigdata
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+
+networks:
+  bigdata:
+    driver: bridge
